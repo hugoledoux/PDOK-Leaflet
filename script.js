@@ -14,7 +14,19 @@ var BRTlayer = new L.TileLayer(
     attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
     continuousWorld: true
   }
-)
+);
+
+//-- openbasiskaart.nl
+var OBKlayer = new L.TileLayer(
+  'http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{y}.png', {
+    tms: true,
+    minZoom: 3,
+    maxZoom: 13,
+    attribution: '© <a href="http://www.openbasiskaart.nl">openbasiskaart.nl</a>',
+    continuousWorld: true
+  }
+);
+
 
 //-- Luchtphoto
 var Photolayer = new L.TileLayer(
@@ -22,12 +34,14 @@ var Photolayer = new L.TileLayer(
     tms: true,
     minZoom: 3,
     maxZoom: 13,
-    // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
+    // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>',
     continuousWorld: true
   }
-)
+);
 
-//-- AHN2 WMS, the layer ahn2_05m_ruw seems to be down though... switched to 5m gefiltered
+//-- AHN2 WMS, 
+//-- the layer ahn2_05m_ruw seems to be down though... switched to 5m gefiltered
+//-- which is also often down it seems, great.
 var AHN2layer = new L.tileLayer.wms(
   'http://geodata.nationaalgeoregister.nl/ahn2/wms?', {
     // layers: 'ahn2_5m',
@@ -37,7 +51,51 @@ var AHN2layer = new L.tileLayer.wms(
     // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
     // continuousWorld: true
   }
-)
+);
+
+// var AHN2WMTSlayer = new L.TileLayer.WMTS( 
+//   // 'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/ahn2', {
+//     'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/ahn1', {
+//     // layer: 'ahn2_05m_ruw',
+//     layer: 'ahn1_5m',
+//     style: 'default',
+//     // tilematrixSet: 'EPSG:28992',
+//     // matrixSet: RD,
+//     // matrixIds: epsg28992matrixids,
+//     format: 'image/png8'
+//     // attribution: "<a href='https://github.com/mylen/leaflet.TileLayer.WMTS'>GitHub</a>&copy; <a href='http://www.ign.fr'>IGN</a>"
+//   }
+// );
+
+// var epsg28992matrixids = [];
+// for (var i=0; i<22; ++i) {
+//     epsg28992matrixids[i] = 'EPSG:28992:' + i;
+//     topLeftCorner : new L.LatLng(20037508,-20037508);
+// }
+
+// // var m = new Array(22);
+// // for (var i= 0; i<22; i++) {
+// //     m[i]= {
+// //         identifier    : "EPSG:28992:" + i,
+// //         topLeftCorner : new L.LatLng(20037508,-20037508)
+// //     };
+// // }
+
+var test = new L.TileLayer.WMTS( 
+  // 'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/ahn2', {
+    // 'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/ahn1?', {
+    'http://www.openbasiskaart.nl/mapcache/wmts/', {
+    layer: 'osm',
+    style: 'default',
+    matrixSet: RD,
+    format: 'image/png'
+
+    // matrixSet: 'EPSG:28992',
+    // matrixIds: epsg28992matrixids,
+    // attribution: "<a href='https://github.com/mylen/leaflet.TileLayer.WMTS'>GitHub</a>&copy; <a href='http://www.ign.fr'>IGN</a>"
+  }
+);
+
 
 //-- the AHN2 tiles
 var AHN2tileslayer = new L.tileLayer.wms(
@@ -48,7 +106,7 @@ var AHN2tileslayer = new L.tileLayer.wms(
     // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
     // continuousWorld: true
   }
-)
+);
 
 var map = new L.Map('map', {
   continuousWorld: true,
@@ -60,8 +118,11 @@ var map = new L.Map('map', {
 
 var baseMaps = {
     "BRT": BRTlayer,
+    "Openbasiskaart": OBKlayer,
     "Orthophoto": Photolayer,
     "AHN2": AHN2layer,
+    // "AHN2WMTS": AHN2WMTSlayer,
+    "test": test,
     "AHN2 tiles": AHN2tileslayer
 };
 L.control.layers(baseMaps).addTo(map);
