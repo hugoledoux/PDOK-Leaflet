@@ -5,21 +5,67 @@ var RD = new L.Proj.CRS.TMS(
     resolutions: [3440.640, 1720.320, 860.160, 430.080, 215.040, 107.520, 53.760, 26.880, 13.440, 6.720, 3.360, 1.680, 0.840, 0.420]
 });
 
+//-- BRT
+var BRTlayer = new L.TileLayer(
+  'http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png', {
+    tms: true,
+    minZoom: 3,
+    maxZoom: 13,
+    attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
+    continuousWorld: true
+  }
+)
+
+//-- Luchtphoto
+var Photolayer = new L.TileLayer(
+  'http://geodata1.nationaalgeoregister.nl/luchtfoto/tms/1.0.0/luchtfoto/EPSG28992/{z}/{x}/{y}.jpeg', {
+    tms: true,
+    minZoom: 3,
+    maxZoom: 13,
+    // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
+    continuousWorld: true
+  }
+)
+
+//-- AHN2 WMS, the layer ahn2_05m_ruw seems to be down though... switched to 5m gefiltered
+var AHN2layer = new L.tileLayer.wms(
+  'http://geodata.nationaalgeoregister.nl/ahn2/wms?', {
+    // layers: 'ahn2_5m',
+    layers: 'ahn2_05m_ruw',
+    crs: RD,
+    format: 'image/png'
+    // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
+    // continuousWorld: true
+  }
+)
+
+//-- the AHN2 tiles
+var AHN2tileslayer = new L.tileLayer.wms(
+  'http://geodata.nationaalgeoregister.nl/ahn2/wms?', {
+    layers: 'ahn2_bladindex',
+    crs: RD,
+    format: 'image/png'
+    // attribution: '© <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a>',
+    // continuousWorld: true
+  }
+)
+
 var map = new L.Map('map', {
   continuousWorld: true,
   crs: RD,
-  layers: [
-    new L.TileLayer('http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png', {
-        tms: true,
-        minZoom: 3,
-        maxZoom: 13,
-        attribution: 'Kaartgegevens: © <a href="http://www.cbs.nl">CBS</a>, <a href="http://www.kadaster.nl">Kadaster</a>, <a href="http://openstreetmap.org">OpenStreetMap</a><span class="printhide">-auteurs (<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>).</span>',
-        continuousWorld: true
-    })
-  ],
+  layers: [BRTlayer],
   center: new L.LatLng(52, 5.3),
   zoom: 3
 });
+
+var baseMaps = {
+    "BRT": BRTlayer,
+    "Orthophoto": Photolayer,
+    "AHN2": AHN2layer,
+    "AHN2 tiles": AHN2tileslayer
+};
+L.control.layers(baseMaps).addTo(map);
+
 // test RD coordinates
 map.on('click', function(e) {
     if (window.console) {
